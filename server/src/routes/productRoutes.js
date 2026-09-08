@@ -37,6 +37,7 @@ router.get("/", async (req, res) => {
   }
 });
 // Get single product by ID
+// Get single product by ID
 router.get("/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -59,5 +60,4 @@ router.get("/:id", async (req, res) => {
     });
   }
 });
-
 export default router;

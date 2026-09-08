@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Link,
+  useParams,
+} from "react-router-dom";
+import { CartProvider } from "./context/CartContext";
 
-function App() {
+function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -11,6 +19,7 @@ function App() {
         if (!response.ok) {
           throw new Error("Failed to fetch products");
         }
+
         return response.json();
       })
       .then((data) => {
@@ -47,17 +56,125 @@ function App() {
       {!loading && !error && products.length > 0 && (
         <div>
           {products.map((product) => (
-            <div key={product._id}>
-              <h3>{product.name}</h3>
-              <p>{product.description}</p>
-              <p>₹{product.price}</p>
-              <p>Category: {product.category}</p>
-              <p>Stock: {product.stock}</p>
-            </div>
+            <Link
+              key={product._id}
+              to={`/products/${product._id}`}
+              style={{
+                textDecoration: "none",
+                color: "black",
+              }}
+            >
+              <div
+                style={{
+                  border: "1px solid #ddd",
+                  padding: "15px",
+                  margin: "10px 0",
+                  cursor: "pointer",
+                }}
+              >
+                <h3>{product.name}</h3>
+
+                <p>{product.description}</p>
+
+                <p>₹{product.price}</p>
+
+                <p>Category: {product.category}</p>
+
+                <p>Stock: {product.stock}</p>
+              </div>
+            </Link>
           ))}
         </div>
       )}
     </div>
+  );
+}
+
+
+// Product Details Page
+function ProductDetails() {
+  const { id } = useParams();
+
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch(`http://localhost:5000/api/products/${id}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch product");
+        }
+
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Product Details:", data);
+
+        if (data.success) {
+          setProduct(data.product);
+        } else {
+          setError(data.message || "Product not found");
+        }
+      })
+      .catch((error) => {
+        console.error("Product Error:", error);
+        setError(error.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) {
+    return <p>Loading product...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
+
+  if (!product) {
+    return <p>Product not found.</p>;
+  }
+
+  return (
+    <div>
+      <Link to="/">← Back to Products</Link>
+
+      <h1>{product.name}</h1>
+
+      <p>{product.description}</p>
+
+      <h2>₹{product.price}</h2>
+
+      <p>Category: {product.category}</p>
+
+      <p>Stock: {product.stock}</p>
+
+      <button>
+        Add to Cart
+      </button>
+    </div>
+  );
+}
+
+
+// Main App
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+
+        <Route path="/" element={<Products />} />
+
+        <Route
+          path="/products/:id"
+          element={<ProductDetails />}
+        />
+
+      </Routes>
+    </BrowserRouter>
   );
 }
 
