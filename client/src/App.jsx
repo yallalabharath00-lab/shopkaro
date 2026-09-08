@@ -176,9 +176,9 @@
     return (
       <CartProvider>
         <BrowserRouter>
+          <Navbar />
           <Routes>
 
-            <Navbar />
 
           <Route path="/" 
             element={<Products />} 
