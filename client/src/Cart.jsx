@@ -4,11 +4,21 @@ import { useCart } from "./context/CartContext";
 function Cart() {
   const {
     cart,
+    loading,
     removeFromCart,
     increaseQuantity,
     decreaseQuantity,
     cartTotal,
   } = useCart();
+
+  if (loading) {
+    return (
+      <div>
+        <h1>Shopping Cart</h1>
+        <p>Loading cart...</p>
+      </div>
+    );
+  }
 
   if (cart.length === 0) {
     return (
@@ -28,42 +38,55 @@ function Cart() {
     <div>
       <h1>Shopping Cart</h1>
 
-      {cart.map((item) => (
-        <div
-          key={item._id}
-          style={{
-            border: "1px solid #ddd",
-            padding: "15px",
-            marginBottom: "10px",
-          }}
-        >
-          <h2>{item.name}</h2>
+      {cart.map((item) => {
+        const product = item.product;
 
-          <p>Price: ₹{item.price}</p>
+        return (
+          <div
+            key={product._id}
+            style={{
+              border: "1px solid #ddd",
+              padding: "15px",
+              marginBottom: "10px",
+            }}
+          >
+            <h2>{product.name}</h2>
 
-          <div>
-            <button onClick={() => decreaseQuantity(item._id)}>
-              -
-            </button>
+            <p>{product.description}</p>
 
-            <span style={{ margin: "0 15px" }}>
-              {item.quantity}
-            </span>
+            <p>Price: ₹{product.price}</p>
 
-            <button onClick={() => increaseQuantity(item._id)}>
-              +
+            <div>
+              <button
+                onClick={() => decreaseQuantity(product._id)}
+                disabled={item.quantity <= 1}
+              >
+                -
+              </button>
+
+              <span style={{ margin: "0 15px" }}>
+                {item.quantity}
+              </span>
+
+              <button
+                onClick={() => increaseQuantity(product._id)}
+              >
+                +
+              </button>
+            </div>
+
+            <p>
+              Item Total: ₹{product.price * item.quantity}
+            </p>
+
+            <button
+              onClick={() => removeFromCart(product._id)}
+            >
+              Remove
             </button>
           </div>
-
-          <p>
-            Item Total: ₹{item.price * item.quantity}
-          </p>
-
-          <button onClick={() => removeFromCart(item._id)}>
-            Remove
-          </button>
-        </div>
-      ))}
+        );
+      })}
 
       <hr />
 

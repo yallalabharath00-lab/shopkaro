@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import productRoutes from "./routes/productRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
 
 const app = express();
 
@@ -30,5 +31,5 @@ app.get("/api/health", (req, res) => {
 // Product routes
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
-
+app.use("/api/cart", cartRoutes);
 export default app;
