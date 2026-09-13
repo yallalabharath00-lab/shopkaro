@@ -1,13 +1,12 @@
 import { Link } from "react-router-dom";
-import { useCart } from "./context/CartContext";
+import { useAuth } from "./context/AuthContext";
 
 function Navbar() {
-  const { cart } = useCart();
+  const { user, isLoggedIn, logout } = useAuth();
 
-  const cartCount = cart.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <nav
@@ -20,25 +19,51 @@ function Navbar() {
         marginBottom: "20px",
       }}
     >
-      <Link
-        to="/"
-        style={{
-          textDecoration: "none",
-          color: "inherit",
-        }}
-      >
-        <h2>ShopKaro</h2>
-      </Link>
+      {/* Logo */}
+      <div>
+        <Link
+          to="/"
+          style={{
+            textDecoration: "none",
+            color: "black",
+            fontSize: "24px",
+            fontWeight: "bold",
+          }}
+        >
+          ShopKaro
+        </Link>
+      </div>
 
-      <Link
-        to="/cart"
+      {/* Navigation */}
+      <div
         style={{
-          textDecoration: "none",
-          color: "inherit",
+          display: "flex",
+          alignItems: "center",
+          gap: "15px",
         }}
       >
-        🛒 Cart ({cartCount})
-      </Link>
+        <Link to="/">Home</Link>
+
+        <Link to="/cart">Cart</Link>
+
+        {!isLoggedIn ? (
+          <>
+            <Link to="/login">Login</Link>
+
+            <Link to="/register">Register</Link>
+          </>
+        ) : (
+          <>
+            <span>
+              Hi, {user?.name}
+            </span>
+
+            <button onClick={handleLogout}>
+              Logout
+            </button>
+          </>
+        )}
+      </div>
     </nav>
   );
 }

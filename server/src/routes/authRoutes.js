@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken";
 import express from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
@@ -6,6 +7,7 @@ const router = express.Router();
 
 // REGISTER USER
 router.post("/register", async (req, res) => {
+  console.log("REQUEST BODY:", req.body);
   try {
     const { name, email, password } = req.body;
 
@@ -36,6 +38,72 @@ router.post("/register", async (req, res) => {
     res.status(201).json({
       success: true,
       message: "User registered successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+// LOGIN USER
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide email and password",
+      });
+    }
+
+    // Find user
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
+    // Check password
+    const isPasswordCorrect = await bcrypt.compare(
+      password,
+      user.password
+    );
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
+    // Create JWT
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      token,
       user: {
         id: user._id,
         name: user.name,

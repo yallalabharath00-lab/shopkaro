@@ -6,10 +6,13 @@
     Link,
     useParams,
   } from "react-router-dom";
+  import Login from "./pages/Login";
+  import Register from "./pages/Register";
   import { CartProvider } from "./context/CartContext";
   import { useCart } from "./context/CartContext";
   import Cart from "./Cart";
   import Navbar from "./Navbar";
+  import ProtectedRoute from "./components/ProtectedRoute";
 
   function Products() {
     const [products, setProducts] = useState([]);
@@ -178,6 +181,9 @@
         <BrowserRouter>
           <Navbar />
           <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            
 
 
           <Route path="/" 
@@ -188,7 +194,14 @@
             path="/products/:id"
             element={<ProductDetails />}
           />
-          <Route path="/cart" element={<Cart />} />
+          <Route
+             path="/cart"
+             element={
+            <ProtectedRoute>
+             <Cart />
+            </ProtectedRoute>
+              }
+          />
 
           </Routes>
         </BrowserRouter>
