@@ -25,7 +25,7 @@ function Navbar() {
           to="/"
           style={{
             textDecoration: "none",
-            color: "black",
+            color: "white",
             fontSize: "24px",
             fontWeight: "bold",
           }}
